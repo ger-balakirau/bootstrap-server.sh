@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BOOTSTRAP_CONFIG_FILE="${BOOTSTRAP_CONFIG_FILE:-/etc/bootstrap-server.conf}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+BOOTSTRAP_CONFIG_FILE="${BOOTSTRAP_CONFIG_FILE:-${SCRIPT_DIR}/bootstrap-server.conf}"
 
 ###############################################################################
 # Helpers
@@ -24,7 +25,7 @@ as_root() {
 
 load_config() {
   if [[ ! -f "${BOOTSTRAP_CONFIG_FILE}" ]]; then
-    die "Config file not found: ${BOOTSTRAP_CONFIG_FILE}. Copy examples/bootstrap-server.conf to /etc/bootstrap-server.conf and edit it."
+    die "Config file not found: ${BOOTSTRAP_CONFIG_FILE}. Copy or create bootstrap-server.conf рядом со скриптом и отредактируй его."
   fi
 
   log "Loading config from ${BOOTSTRAP_CONFIG_FILE}"

@@ -5,12 +5,11 @@
 ## Быстрый старт
 
 ```bash
-sudo install -m 600 examples/bootstrap-server.conf /etc/bootstrap-server.conf
-sudo nano /etc/bootstrap-server.conf
+sudo nano scripts/bootstrap-server.conf
 sudo bash scripts/bootstrap-server.sh
 ```
 
-Все настройки находятся в `/etc/bootstrap-server.conf`. Скрипт без этого файла не запускается, чтобы случайно не применить неподходящие дефолты.
+Все настройки находятся в `scripts/bootstrap-server.conf`, рядом со скриптом. Другой путь можно указать через `BOOTSTRAP_CONFIG_FILE`.
 
 ## Что делает основной скрипт
 
@@ -27,7 +26,7 @@ sudo bash scripts/bootstrap-server.sh
 
 ## Firewall
 
-Основные переменные в `/etc/bootstrap-server.conf`:
+Основные переменные в `scripts/bootstrap-server.conf`:
 
 ```bash
 FIREWALL_BACKEND="auto"
@@ -42,7 +41,7 @@ FIREWALL_TRUSTED_CIDRS=("10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16")
 
 ## WireGuard
 
-WireGuard настраивается в `/etc/bootstrap-server.conf`.
+WireGuard настраивается в `scripts/bootstrap-server.conf`.
 
 Отключить WireGuard:
 
