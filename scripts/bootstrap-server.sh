@@ -1,90 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-###############################################################################
-# Toggleable configuration
-###############################################################################
-
-RUN_SYSTEM_UPDATE=true
-INSTALL_BASE_PACKAGES=true
-CONFIGURE_TIMEZONE=true
-CREATE_ADMIN_USER=false
-CONFIGURE_SSH=true
-CONFIGURE_FIREWALL=true
-INSTALL_WIREGUARD=false
-INSTALL_FAIL2BAN=true
-AUTO_REBOOT=false
-
 BOOTSTRAP_CONFIG_FILE="${BOOTSTRAP_CONFIG_FILE:-/etc/bootstrap-server.conf}"
-
-TIMEZONE="Europe/Moscow"
-
-ADMIN_USER="deploy"
-ADMIN_SSH_PUBLIC_KEY=""
-ADMIN_PASSWORDLESS_SUDO=false
-
-SSH_PORT="22"
-SSH_DISABLE_ROOT_LOGIN=true
-SSH_DISABLE_PASSWORD_AUTH=true
-
-# Firewall backend: auto, ufw, firewalld, nftables
-FIREWALL_BACKEND="auto"
-FIREWALL_ALLOW_SSH=true
-FIREWALL_ALLOWED_TCP_PORTS=("80" "443")
-FIREWALL_ALLOWED_UDP_PORTS=()
-FIREWALL_ALLOW_TRUSTED_CIDRS=true
-FIREWALL_TRUSTED_CIDRS=("10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16")
-
-# WireGuard mode: server or client
-WIREGUARD_MODE="server"
-WIREGUARD_INTERFACE="wg0"
-WIREGUARD_PORT="51820"
-WIREGUARD_CONFIG_DIR="/etc/wireguard"
-WIREGUARD_PRIVATE_KEY=""
-WIREGUARD_DNS=("1.1.1.1" "8.8.8.8")
-
-# Server mode settings
-WIREGUARD_SERVER_ADDRESS="10.8.0.1/24"
-WIREGUARD_SERVER_LISTEN_PORT="${WIREGUARD_PORT}"
-WIREGUARD_SERVER_ENABLE_NAT=true
-WIREGUARD_SERVER_NAT_INTERFACE="" # empty means auto-detect default route interface
-WIREGUARD_SERVER_PEER_PUBLIC_KEY=""
-WIREGUARD_SERVER_PEER_PRESHARED_KEY=""
-WIREGUARD_SERVER_PEER_ALLOWED_IPS=("10.8.0.2/32")
-
-# Client mode settings
-WIREGUARD_CLIENT_ADDRESS="10.8.0.2/32"
-WIREGUARD_CLIENT_SERVER_PUBLIC_KEY=""
-WIREGUARD_CLIENT_PRESHARED_KEY=""
-WIREGUARD_CLIENT_ENDPOINT="vpn.example.com:${WIREGUARD_PORT}"
-WIREGUARD_CLIENT_ALLOWED_IPS=("10.8.0.0/24")
-WIREGUARD_CLIENT_PERSISTENT_KEEPALIVE="25"
-WIREGUARD_AUTO_UP=false
-
-BASE_PACKAGES_DEBIAN=(
-  ca-certificates
-  curl
-  gnupg
-  iptables
-  lsb-release
-  openssh-server
-  software-properties-common
-  sudo
-  unattended-upgrades
-  vim
-  wget
-)
-
-BASE_PACKAGES_RHEL=(
-  ca-certificates
-  curl
-  gnupg2
-  iptables
-  openssh-server
-  sudo
-  vim
-  wget
-)
 
 ###############################################################################
 # Helpers
@@ -106,11 +23,13 @@ as_root() {
 }
 
 load_config() {
-  if [[ -f "${BOOTSTRAP_CONFIG_FILE}" ]]; then
-    log "Loading config from ${BOOTSTRAP_CONFIG_FILE}"
-    # shellcheck source=/dev/null
-    source "${BOOTSTRAP_CONFIG_FILE}"
+  if [[ ! -f "${BOOTSTRAP_CONFIG_FILE}" ]]; then
+    die "Config file not found: ${BOOTSTRAP_CONFIG_FILE}. Copy examples/bootstrap-server.conf to /etc/bootstrap-server.conf and edit it."
   fi
+
+  log "Loading config from ${BOOTSTRAP_CONFIG_FILE}"
+  # shellcheck source=/dev/null
+  source "${BOOTSTRAP_CONFIG_FILE}"
 }
 
 detect_package_manager() {

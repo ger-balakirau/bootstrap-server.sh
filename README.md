@@ -5,20 +5,12 @@
 ## Быстрый старт
 
 ```bash
-sudo bash scripts/bootstrap-server.sh
-```
-
-Перед запуском откройте `scripts/bootstrap-server.sh` и настройте переменные в начале файла. Все основные шаги можно отключить через `true` / `false`.
-
-Секреты и серверные настройки лучше хранить отдельно:
-
-```bash
-sudo install -m 600 examples/bootstrap-server.client.conf /etc/bootstrap-server.conf
+sudo install -m 600 examples/bootstrap-server.conf /etc/bootstrap-server.conf
 sudo nano /etc/bootstrap-server.conf
 sudo bash scripts/bootstrap-server.sh
 ```
 
-Скрипт автоматически загрузит `/etc/bootstrap-server.conf`, если файл существует.
+Все настройки находятся в `/etc/bootstrap-server.conf`. Скрипт без этого файла не запускается, чтобы случайно не применить неподходящие дефолты.
 
 ## Что делает основной скрипт
 
@@ -35,7 +27,7 @@ sudo bash scripts/bootstrap-server.sh
 
 ## Firewall
 
-Основные переменные:
+Основные переменные в `/etc/bootstrap-server.conf`:
 
 ```bash
 FIREWALL_BACKEND="auto"
@@ -50,7 +42,9 @@ FIREWALL_TRUSTED_CIDRS=("10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16")
 
 ## WireGuard
 
-WireGuard отключен по умолчанию:
+WireGuard настраивается в `/etc/bootstrap-server.conf`.
+
+Отключить WireGuard:
 
 ```bash
 INSTALL_WIREGUARD=false
@@ -58,7 +52,7 @@ WIREGUARD_MODE="server" # server или client
 WIREGUARD_AUTO_UP=false
 ```
 
-Для сервера:
+Включить режим сервера:
 
 ```bash
 INSTALL_WIREGUARD=true
@@ -70,7 +64,7 @@ WIREGUARD_SERVER_PEER_PRESHARED_KEY="optional-preshared-key"
 WIREGUARD_SERVER_PEER_ALLOWED_IPS=("10.8.0.2/32")
 ```
 
-Для клиента:
+Включить режим клиента:
 
 ```bash
 INSTALL_WIREGUARD=true
