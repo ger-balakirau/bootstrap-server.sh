@@ -164,12 +164,26 @@ join_by() {
   printf '%s' "${@/#/${separator}}"
 }
 
-ssh_service_name() {
-  if systemctl list-unit-files 2>/dev/null | grep -q '^ssh\.service'; then
-    printf 'ssh'
-  else
-    printf 'sshd'
+restart_ssh_service() {
+  local service
+
+  if command -v systemctl >/dev/null 2>&1; then
+    for service in ssh sshd; do
+      if systemctl cat "${service}.service" >/dev/null 2>&1; then
+        systemctl restart "${service}.service"
+        return 0
+      fi
+    done
   fi
+
+  for service in ssh sshd; do
+    if service "${service}" status >/dev/null 2>&1; then
+      service "${service}" restart
+      return 0
+    fi
+  done
+
+  die "SSH service not found; install openssh-server and rerun"
 }
 
 default_route_interface() {
@@ -265,7 +279,7 @@ configure_ssh() {
   fi
 
   sshd -t
-  restart_service "$(ssh_service_name)"
+  restart_ssh_service
 }
 
 detect_firewall_backend() {
