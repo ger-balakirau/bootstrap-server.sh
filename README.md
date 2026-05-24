@@ -10,6 +10,16 @@ sudo bash scripts/bootstrap-server.sh
 
 Перед запуском откройте `scripts/bootstrap-server.sh` и настройте переменные в начале файла. Все основные шаги можно отключить через `true` / `false`.
 
+Секреты и серверные настройки лучше хранить отдельно:
+
+```bash
+sudo install -m 600 examples/bootstrap-server.client.conf /etc/bootstrap-server.conf
+sudo nano /etc/bootstrap-server.conf
+sudo bash scripts/bootstrap-server.sh
+```
+
+Скрипт автоматически загрузит `/etc/bootstrap-server.conf`, если файл существует.
+
 ## Что делает основной скрипт
 
 - обновляет пакеты;
@@ -66,6 +76,7 @@ WIREGUARD_SERVER_PEER_ALLOWED_IPS=("10.8.0.2/32")
 INSTALL_WIREGUARD=true
 WIREGUARD_MODE="client"
 WIREGUARD_CLIENT_ADDRESS="10.8.0.2/32"
+WIREGUARD_PRIVATE_KEY="client-private-key"
 WIREGUARD_CLIENT_SERVER_PUBLIC_KEY="server-public-key"
 WIREGUARD_CLIENT_PRESHARED_KEY="optional-preshared-key"
 WIREGUARD_CLIENT_ENDPOINT="vpn.example.com:51820"

@@ -15,6 +15,8 @@ INSTALL_WIREGUARD=false
 INSTALL_FAIL2BAN=true
 AUTO_REBOOT=false
 
+BOOTSTRAP_CONFIG_FILE="${BOOTSTRAP_CONFIG_FILE:-/etc/bootstrap-server.conf}"
+
 TIMEZONE="Europe/Moscow"
 
 ADMIN_USER="deploy"
@@ -100,6 +102,14 @@ die() {
 as_root() {
   if [[ "${EUID}" -ne 0 ]]; then
     die "Run this script as root: sudo bash $0"
+  fi
+}
+
+load_config() {
+  if [[ -f "${BOOTSTRAP_CONFIG_FILE}" ]]; then
+    log "Loading config from ${BOOTSTRAP_CONFIG_FILE}"
+    # shellcheck source=/dev/null
+    source "${BOOTSTRAP_CONFIG_FILE}"
   fi
 }
 
@@ -588,6 +598,7 @@ install_fail2ban() {
 
 main() {
   as_root
+  load_config
   detect_package_manager
 
   [[ "${RUN_SYSTEM_UPDATE}" == "true" ]] && system_update
@@ -596,7 +607,11 @@ main() {
   [[ "${CREATE_ADMIN_USER}" == "true" ]] && create_admin_user
   [[ "${CONFIGURE_SSH}" == "true" ]] && configure_ssh
   [[ "${CONFIGURE_FIREWALL}" == "true" ]] && configure_firewall
-  [[ "${INSTALL_WIREGUARD}" == "true" ]] && install_wireguard
+  if [[ "${INSTALL_WIREGUARD}" == "true" ]]; then
+    install_wireguard
+  else
+    log "WireGuard setup is disabled"
+  fi
   [[ "${INSTALL_FAIL2BAN}" == "true" ]] && install_fail2ban
 
   if [[ "${AUTO_REBOOT}" == "true" ]]; then

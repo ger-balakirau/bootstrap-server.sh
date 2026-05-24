@@ -1,4 +1,5 @@
 .env
+bootstrap-server.local.conf
 *.log
 *.tmp
 *.bak
