@@ -47,11 +47,13 @@ WIREGUARD_SERVER_LISTEN_PORT="${WIREGUARD_PORT}"
 WIREGUARD_SERVER_ENABLE_NAT=true
 WIREGUARD_SERVER_NAT_INTERFACE="" # empty means auto-detect default route interface
 WIREGUARD_SERVER_PEER_PUBLIC_KEY=""
+WIREGUARD_SERVER_PEER_PRESHARED_KEY=""
 WIREGUARD_SERVER_PEER_ALLOWED_IPS=("10.8.0.2/32")
 
 # Client mode settings
 WIREGUARD_CLIENT_ADDRESS="10.8.0.2/32"
 WIREGUARD_CLIENT_SERVER_PUBLIC_KEY=""
+WIREGUARD_CLIENT_PRESHARED_KEY=""
 WIREGUARD_CLIENT_ENDPOINT="vpn.example.com:${WIREGUARD_PORT}"
 WIREGUARD_CLIENT_ALLOWED_IPS=("10.8.0.0/24")
 WIREGUARD_CLIENT_PERSISTENT_KEEPALIVE="25"
@@ -512,6 +514,9 @@ write_wireguard_server_config() {
     if [[ -n "${WIREGUARD_SERVER_PEER_PUBLIC_KEY}" ]]; then
       printf '\n[Peer]\n'
       printf 'PublicKey = %s\n' "${WIREGUARD_SERVER_PEER_PUBLIC_KEY}"
+      if [[ -n "${WIREGUARD_SERVER_PEER_PRESHARED_KEY}" ]]; then
+        printf 'PresharedKey = %s\n' "${WIREGUARD_SERVER_PEER_PRESHARED_KEY}"
+      fi
       printf 'AllowedIPs = %s\n' "$(join_by ', ' "${WIREGUARD_SERVER_PEER_ALLOWED_IPS[@]}")"
     fi
   } > "${config_path}"
@@ -539,6 +544,9 @@ write_wireguard_client_config() {
 
     printf '\n[Peer]\n'
     printf 'PublicKey = %s\n' "${WIREGUARD_CLIENT_SERVER_PUBLIC_KEY}"
+    if [[ -n "${WIREGUARD_CLIENT_PRESHARED_KEY}" ]]; then
+      printf 'PresharedKey = %s\n' "${WIREGUARD_CLIENT_PRESHARED_KEY}"
+    fi
     printf 'Endpoint = %s\n' "${WIREGUARD_CLIENT_ENDPOINT}"
     printf 'AllowedIPs = %s\n' "$(join_by ', ' "${WIREGUARD_CLIENT_ALLOWED_IPS[@]}")"
     printf 'PersistentKeepalive = %s\n' "${WIREGUARD_CLIENT_PERSISTENT_KEEPALIVE}"
